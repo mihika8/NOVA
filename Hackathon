@@ -1,0 +1,152 @@
+{"metadata": {"kernelspec": {"display_name": "Python 3 (ipykernel)"
+ "language": "python"
+ "name": "python3"}
+ "language_info": {"codemirror_mode": {"name": "ipython"
+ "version": 3}
+ "file_extension": ".py"
+ "mimetype": "text/x-python"
+ "name": "python"
+ "nbconvert_exporter": "python"
+ "pygments_lexer": "ipython3"
+ "version": "3.12.7"}}
+ "nbformat_minor": 5
+ "nbformat": 4
+ "cells": [{"id": "3bb3c410-ff1f-4a80-9891-f9b592dbd177"
+ "cell_type": "code"
+ "source": "from openai import OpenAI\n#convert speech to mp3 (speech)\n#need to turn audio transription into function that takes mp3\ndef example_audio_transcription():\n    \"\"\" \n    Examples of audio transcription from the proxy\n    \"\"\"\n    client = OpenAI(\n        api_key=\"sk-UKEoaV5yfVEddD-UDiu4ig\"
+ # set this!!!\n        base_url=\"https://nova-litellm-proxy.onrender.com\" # and this!!!\n    )\n\n    audio_file= open(\"beur.m4a\"
+ \"rb\")\n    transcription = client.audio.transcriptions.create(\n        model=\"whisper-1\"
+ \n        file=audio_file
+\n    )\n    spelling=transcription.text\n    spelling=spelling[:len(spelling)-1]\n    print(spelling)\n\n\nif __name__ == \"__main__\":\n    example_audio_transcription()"
+ "metadata": {"scrolled": true
+ "trusted": true}
+ "outputs": [{"name": "stdout"
+ "output_type": "stream"
+ "text": "Burr\n"}]
+ "execution_count": 156}
+ {"id": "3615697c-4eaf-4f88-84c1-2ee8650266c7"
+ "cell_type": "code"
+ "source": "import sounddevice as sd\nfrom scipy.io.wavfile import write\nimport wavio as wv\n \n# Sampling frequency\nfreq = 44100\n \n# Recording duration\nduration = 5\n \n# Start recorder with the given values \n# of duration and sample frequency\nrecording = sd.rec(int(duration * freq)
+ \n                   samplerate=freq
+ channels=1)\n \n# Record audio for the given number of seconds\nsd.wait()\n \n# This will convert the NumPy array to an audio\n# file with the given sampling frequency\nwrite(\"recording0.wav\"
+ freq
+ recording)\n \n# Convert the NumPy array to audio file\nwv.write(\"recording1.wav\"
+ recording
+ freq
+ sampwidth=2)"
+ "metadata": {"trusted": true}
+ "outputs": []
+ "execution_count": 62}
+ {"id": "20e1e511-a71a-4af7-b0aa-85940215b2bb"
+ "cell_type": "code"
+ "source": "import random\n# Step 1: Define lists of vowels and consonants\nvowels = ['a'
+ 'e'
+ 'i'
+ 'o'
+ 'u'
+ 'y']\nconsonants = [\n    'b'
+ 'c'
+ 'd'
+ 'f'
+ 'g'
+ 'h'
+ 'j'
+ 'k'
+ 'l'
+ 'm'
+\n    'n'
+ 'p'
+ 'r'
+ 's'
+ 't'
+ 'v'
+ 'w'
+ 'x'
+ 'z'\n]\n\n# Step 2: Define possible syllable structures\nsyllable_structures = ['CVC'
+ 'CV'
+ 'VC'
+ 'VCC'
+ 'CCV']\n\n# Step 3: Function to generate a random syllable based on a structure\ndef generate_syllable(structure):\n    syllable = \"\"\n    for char in structure:\n        if char == 'C':\n            syllable += random.choice(consonants)\n        elif char == 'V':\n            syllable += random.choice(vowels)\n    return syllable\n\n# Step 4: Function to generate a fake word with a random number of syllables\ndef generate_word(min_syllables=1
+ max_syllables=3):\n    word = \"\"\n    syllable_count = random.randint(min_syllables
+ max_syllables)\n    for _ in range(syllable_count):\n        structure = random.choice(syllable_structures)\n        word += generate_syllable(structure)\n    return word.capitalize()  # Capitalize the first letter for a name-like feel\n\n# Step 5: Function to generate a list of fake words\ndef generate_fake_words(num_words=10
+ min_syllables=1
+ max_syllables=3):\n    words = [generate_word(min_syllables
+ max_syllables) for _ in range(num_words)]\n    return words\n\n# Step 6: Generate and print a list of fake words\nif __name__ == \"__main__\":\n    num_words = 1\n    min_syllables = 2\n    max_syllables = 2\n   \n    fake_words = generate_fake_words(num_words
+ min_syllables
+ max_syllables)\n    for word in fake_words:\n        fakeWord=\"beur\"\n        print(fakeWord)"
+ "metadata": {"trusted": true}
+ "outputs": [{"name": "stdout"
+ "output_type": "stream"
+ "text": "beur\n"}]
+ "execution_count": 112}
+ {"id": "0980162d-51fe-4209-bb67-e6fdfa9f3d38"
+ "cell_type": "code"
+ "source": "import openai\n\n# Set your OpenAI API key here\nopenai.api_key = 'your-openai-api-key'\n\ndef get_phonetic_variations(fakeWord):\n    # Construct a prompt to ask GPT to generate phonetic variations\n    prompt = (\n        f\"Generate all possible spellings that sound like the word '{fakeWord}'. \"\n        \"The spellings should have similar pronunciation but can use different letters. \"\n        \"Provide a list of all possible variations without changing the sound.\"\n    )\n\n    # Call the OpenAI API to get the response\n    try:\n        response = openai.ChatCompletion.create(\n            model=\"gpt-4\"
+\n            messages=[{\"role\": \"user\"
+ \"content\": prompt}]
+\n            max_tokens=150
+\n            temperature=0.7\n        )\n        # Extract the content from the response\n        variations = response.choices[0].message['content']\n        \n        # Convert the response to a list (assuming GPT returns line-separated results)\n        phonetic_list = variations.split(\"\\n\")\n        phonetic_list = [word.strip() for word in phonetic_list if word.strip()]\n\n        return phonetic_list\n\n    except Exception as e:\n        print(f\"Error: {e}\")\n        return []\n\n# Example usage\nfake_word = fakeWord\nphonetic_variations = get_phonetic_variations(fake_word)\n\n# Display the results\nprint(f\"\\nPhonetic variations of '{fake_word}':\")\nfor variation in phonetic_variations:\n    print(variation)"
+ "metadata": {"trusted": true}
+ "outputs": [{"name": "stdin"
+ "output_type": "stream"
+ "text": "Enter a fake word:  beur\n"}
+ {"name": "stdout"
+ "output_type": "stream"
+ "text": "Error: \n\nYou tried to access openai.ChatCompletion
+ but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.\n\nYou can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. \n\nAlternatively
+ you can pin your installation to the old version
+ e.g. `pip install openai==0.28`\n\nA detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742\n\n\nPhonetic variations of 'beur':\n"}]
+ "execution_count": 154}
+ {"id": "c4fe0969-9c70-49e7-a96c-d2889263285f"
+ "cell_type": "code"
+ "source": "pip install openai"
+ "metadata": {"trusted": true}
+ "outputs": [{"name": "stdout"
+ "output_type": "stream"
+ "text": "Requirement already satisfied: openai in /opt/anaconda3/lib/python3.12/site-packages (1.54.3)\nRequirement already satisfied: anyio<5
+>=3.5.0 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (4.2.0)\nRequirement already satisfied: distro<2
+>=1.7.0 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (1.9.0)\nRequirement already satisfied: httpx<1
+>=0.23.0 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (0.27.0)\nRequirement already satisfied: jiter<1
+>=0.4.0 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (0.7.0)\nRequirement already satisfied: pydantic<3
+>=1.9.0 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (2.8.2)\nRequirement already satisfied: sniffio in /opt/anaconda3/lib/python3.12/site-packages (from openai) (1.3.0)\nRequirement already satisfied: tqdm>4 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (4.66.5)\nRequirement already satisfied: typing-extensions<5
+>=4.11 in /opt/anaconda3/lib/python3.12/site-packages (from openai) (4.11.0)\nRequirement already satisfied: idna>=2.8 in /opt/anaconda3/lib/python3.12/site-packages (from anyio<5
+>=3.5.0->openai) (3.7)\nRequirement already satisfied: certifi in /opt/anaconda3/lib/python3.12/site-packages (from httpx<1
+>=0.23.0->openai) (2024.8.30)\nRequirement already satisfied: httpcore==1.* in /opt/anaconda3/lib/python3.12/site-packages (from httpx<1
+>=0.23.0->openai) (1.0.2)\nRequirement already satisfied: h11<0.15
+>=0.13 in /opt/anaconda3/lib/python3.12/site-packages (from httpcore==1.*->httpx<1
+>=0.23.0->openai) (0.14.0)\nRequirement already satisfied: annotated-types>=0.4.0 in /opt/anaconda3/lib/python3.12/site-packages (from pydantic<3
+>=1.9.0->openai) (0.6.0)\nRequirement already satisfied: pydantic-core==2.20.1 in /opt/anaconda3/lib/python3.12/site-packages (from pydantic<3
+>=1.9.0->openai) (2.20.1)\nNote: you may need to restart the kernel to use updated packages.\n"}]
+ "execution_count": 78}
+ {"id": "213685aa-e435-4ce4-a1d2-3d1abf1b4036"
+ "cell_type": "code"
+ "source": "pip install wavio"
+ "metadata": {"trusted": true}
+ "outputs": [{"name": "stdout"
+ "output_type": "stream"
+ "text": "Collecting wavio\n  Downloading wavio-0.0.9-py3-none-any.whl.metadata (5.7 kB)\nRequirement already satisfied: numpy>=1.19.0 in /opt/anaconda3/lib/python3.12/site-packages (from wavio) (1.26.4)\nDownloading wavio-0.0.9-py3-none-any.whl (9.5 kB)\nInstalling collected packages: wavio\nSuccessfully installed wavio-0.0.9\nNote: you may need to restart the kernel to use updated packages.\n"}]
+ "execution_count": 31}
+ {"id": "a7810ba1-e129-4853-9cb4-428c77ee4fa4"
+ "cell_type": "code"
+ "source": "pip install scipy"
+ "metadata": {"trusted": true}
+ "outputs": [{"name": "stdout"
+ "output_type": "stream"
+ "text": "Requirement already satisfied: scipy in /opt/anaconda3/lib/python3.12/site-packages (1.13.1)\nRequirement already satisfied: numpy<2.3
+>=1.22.4 in /opt/anaconda3/lib/python3.12/site-packages (from scipy) (1.26.4)\nNote: you may need to restart the kernel to use updated packages.\n"}]
+ "execution_count": 33}
+ {"id": "1c2e7162-af81-4933-b057-b317b849d78d"
+ "cell_type": "code"
+ "source": "pip install sounddevice"
+ "metadata": {"scrolled": true
+ "trusted": true}
+ "outputs": [{"name": "stdout"
+ "output_type": "stream"
+ "text": "Collecting sounddevice\n  Downloading sounddevice-0.5.1-py3-none-macosx_10_6_x86_64.macosx_10_6_universal2.whl.metadata (1.4 kB)\nRequirement already satisfied: CFFI>=1.0 in /opt/anaconda3/lib/python3.12/site-packages (from sounddevice) (1.17.1)\nRequirement already satisfied: pycparser in /opt/anaconda3/lib/python3.12/site-packages (from CFFI>=1.0->sounddevice) (2.21)\nDownloading sounddevice-0.5.1-py3-none-macosx_10_6_x86_64.macosx_10_6_universal2.whl (107 kB)\nInstalling collected packages: sounddevice\nSuccessfully installed sounddevice-0.5.1\nNote: you may need to restart the kernel to use updated packages.\n"}]
+ "execution_count": 39}
+ {"id": "7bb6b6ca-56e2-4cb8-942b-c05a4ceb3094"
+ "cell_type": "code"
+ "source": ""
+ "metadata": {"trusted": true}
+ "outputs": []
+ "execution_count": null}]}
